@@ -47,17 +47,28 @@ router.post('/tours/:tourId/checklist/init', authenticate, (req, res) => {
   }
 
   const insertStmt = db.prepare(`
-    INSERT INTO checklist_items (id, tour_id, checklist_type, section, item_key, item_label)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO checklist_items
+      (id, tour_id, checklist_type, section, item_key, item_label, criticite, poids, sous_section, numero)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
 
   const insertMany = db.transaction(() => {
     const created = [];
     for (const [sectionKey, section] of Object.entries(definition.sections)) {
-      for (const [itemKey, itemLabel] of Object.entries(section.items)) {
+      for (const itemDef of section.items) {
         const id = uuidv4();
-        insertStmt.run(id, req.params.tourId, checklist_type, sectionKey, itemKey, itemLabel);
-        created.push({ id, tour_id: req.params.tourId, checklist_type, section: sectionKey, item_key: itemKey, item_label: itemLabel });
+        insertStmt.run(
+          id, req.params.tourId, checklist_type, sectionKey,
+          itemDef.key, itemDef.label,
+          itemDef.criticite || null, itemDef.poids || null,
+          itemDef.sous_section || null, itemDef.numero || null
+        );
+        created.push({
+          id, tour_id: req.params.tourId, checklist_type, section: sectionKey,
+          item_key: itemDef.key, item_label: itemDef.label,
+          criticite: itemDef.criticite || null, poids: itemDef.poids || null,
+          sous_section: itemDef.sous_section || null, numero: itemDef.numero || null,
+        });
       }
     }
     return created;
@@ -77,10 +88,10 @@ router.put('/checklist/:id', authenticate, (req, res) => {
   if (req.user.role === 'animateur_hse' && item.user_id !== req.user.id) {
     return res.status(403).json({ success: false, error: 'Accès refusé' });
   }
-  const { statut, observation, action_plan, action_deadline, action_responsible } = req.body;
+  const { statut, observation, action_plan, action_deadline, action_responsible, corrige_sur_place } = req.body;
   db.prepare(`
     UPDATE checklist_items
-    SET statut=?, observation=?, action_plan=?, action_deadline=?, action_responsible=?, updated_at=?
+    SET statut=?, observation=?, action_plan=?, action_deadline=?, action_responsible=?, corrige_sur_place=?, updated_at=?
     WHERE id=?
   `).run(
     statut !== undefined ? statut : item.statut,
@@ -88,6 +99,7 @@ router.put('/checklist/:id', authenticate, (req, res) => {
     action_plan !== undefined ? action_plan : item.action_plan,
     action_deadline !== undefined ? action_deadline : item.action_deadline,
     action_responsible !== undefined ? action_responsible : item.action_responsible,
+    corrige_sur_place !== undefined ? (corrige_sur_place ? 1 : 0) : item.corrige_sur_place,
     new Date().toISOString(),
     req.params.id
   );

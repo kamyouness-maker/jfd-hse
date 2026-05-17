@@ -57,6 +57,11 @@ db.exec(`
     action_plan TEXT,
     action_deadline TEXT,
     action_responsible TEXT,
+    criticite TEXT,
+    poids REAL,
+    sous_section TEXT,
+    numero TEXT,
+    corrige_sur_place INTEGER DEFAULT 0,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now')),
     FOREIGN KEY(tour_id) REFERENCES tours(id)
@@ -82,5 +87,10 @@ if (!adminExists) {
   `).run('admin', hash, 'Administrateur', 'admin');
   console.log('Admin user seeded');
 }
+
+// Migration: add new columns if they don't exist yet
+['criticite TEXT', 'poids REAL', 'sous_section TEXT', 'numero TEXT', 'corrige_sur_place INTEGER DEFAULT 0'].forEach(col => {
+  try { db.exec(`ALTER TABLE checklist_items ADD COLUMN ${col}`); } catch {}
+});
 
 module.exports = db;

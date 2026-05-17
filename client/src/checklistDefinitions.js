@@ -1,171 +1,200 @@
-const checklistDefinitions = {
+// Definitions built from official OCP JFC2 Excel checklists
+
+const DEFINITIONS = {
   standards_hse: {
-    label: 'Standards HSE',
+    label: 'Standards HSE et LSR',
     sections: {
       autorisation: {
         label: 'Autorisation de travail',
-        items: {
-          auth_1: 'Autorisation de travail disponible et signée',
-          auth_2: "Validité de l'autorisation vérifiée",
-          auth_3: 'Périmètre de travail délimité',
-          auth_4: 'Analyse des risques effectuée',
-          auth_5: 'Responsable travaux présent sur site'
-        }
+        items: [
+          { key: 'auth_1',    numero: '1',    criticite: 'Critique', poids: 0.5, sous_section: null,                      label: "L'autorisation de travail est-elle validée par le CEEP et CEEE, délivrée et existe ?" },
+          { key: 'auth_2',    numero: '3',    criticite: 'Elevée',   poids: 0.4, sous_section: null,                      label: "L'autorisation de travail est-elle instruite sur le terrain ?" },
+          { key: 'auth_3',    numero: '4',    criticite: 'Moyenne',  poids: 0.2, sous_section: null,                      label: "Les risques liés à l'intervention sont-ils bien évalués ?" },
+          { key: 'auth_4',    numero: '5',    criticite: 'Moyenne',  poids: 0.2, sous_section: null,                      label: "Les mesures nécessaires pour préparer l'intervention sont-elles mentionnées et mises en place ?" },
+          { key: 'auth_5',    numero: '6',    criticite: 'Moyenne',  poids: 0.2, sous_section: null,                      label: "Les moyens d'accès nécessaires sont-ils bien définis ?" },
+          { key: 'auth_6',    numero: '7',    criticite: 'Moyenne',  poids: 0.2, sous_section: null,                      label: "Les permis nécessaires sont-ils bien définis ?" },
+          { key: 'auth_7',    numero: '8',    criticite: 'Moyenne',  poids: 0.2, sous_section: null,                      label: "Les EPI spécifiques nécessaires sont-ils bien définis ?" },
+          { key: 'auth_9_1',  numero: '9-1',  criticite: 'Critique', poids: 0.5, sous_section: "Travaux d'excavation",    label: "Le permis de fouille est-il délivré et existe ?" },
+          { key: 'auth_9_2',  numero: '9-2',  criticite: 'Critique', poids: 0.5, sous_section: "Travaux d'excavation",    label: "Le permis de fouille est-il validé par l'ensemble des acteurs et valable ? (Durée 1 mois)" },
+          { key: 'auth_9_3',  numero: '9-3',  criticite: 'Critique', poids: 0.5, sous_section: "Travaux d'excavation",    label: "Le rapport géoradar existe-il et couvre la zone d'intervention ?" },
+          { key: 'auth_10_1', numero: '10-1', criticite: 'Critique', poids: 0.5, sous_section: 'Travaux par point chaud', label: "Le permis de feu est-il valide par le CEEP et CEEE, délivré et existe ?" },
+          { key: 'auth_10_2', numero: '10-2', criticite: 'Moyenne',  poids: 0.2, sous_section: 'Travaux par point chaud', label: "Le permis de feu est-il bien instruit ?" },
+          { key: 'auth_10_3', numero: '10-3', criticite: 'Critique', poids: 0.5, sous_section: 'Travaux par point chaud', label: "Le permis de feu n'est délivré qu'après la mise en place du matériel et moyens de sécurité exigés" },
+          { key: 'auth_11',   numero: '11',   criticite: 'Critique', poids: 0.5, sous_section: null,                      label: "L'autorisation de travail n'est délivrée qu'après la mise en place des permis nécessaires sur terrain" },
+        ],
       },
       consignation: {
         label: 'Consignation',
-        items: {
-          cons_1: 'Procédure de consignation respectée',
-          cons_2: 'Attestation de consignation disponible',
-          cons_3: 'Cadenassage effectué',
-          cons_4: 'Dispositifs de déverrouillage non disponibles',
-          cons_5: "Vérification absence d'énergie effectuée"
-        }
+        items: [
+          { key: 'cons_1', numero: '11', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Existence et validation du Plan de consignation" },
+          { key: 'cons_2', numero: '12', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Plan de consignation est bien rempli et respecté" },
+          { key: 'cons_3', numero: '13', criticite: 'Critique', poids: 0.5, sous_section: null, label: "La consignation est réalisée et respectée sur terrain (points à cadenasser et étiquetage)" },
+          { key: 'cons_4', numero: '14', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Tous les acteurs (chargé de consignation et CEEP) mettent leur cadenas individuel" },
+          { key: 'cons_5', numero: '15', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Tous les intervenants mettent leurs cadenas individuel" },
+        ],
       },
       hauteur: {
-        label: 'Travail en hauteur',
-        items: {
-          haut_1: 'Équipement adapté et certifié',
-          haut_2: 'Harnais porté et inspecté',
-          haut_3: "Point d'ancrage certifié conforme",
-          haut_4: 'Zone balisée en dessous',
-          haut_5: "Échelle/échafaudage en bon état"
-        }
+        label: 'Travaux en hauteur',
+        items: [
+          { key: 'haut_1',  numero: '16',   criticite: 'Critique', poids: 0.5, sous_section: null,                label: "Le permis de travail sur échafaudage est-il validé par ECMA, délivré et existe ?" },
+          { key: 'haut_2',  numero: '17',   criticite: 'Elevée',   poids: 0.4, sous_section: null,                label: "Le permis de travail sur échafaudage est-il bien instruit ?" },
+          { key: 'haut_3',  numero: '18',   criticite: 'Critique', poids: 0.5, sous_section: null,                label: "La vérification journalière des échafaudages est-elle validée par CEEE, délivrée et existe ?" },
+          { key: 'haut_4',  numero: '19',   criticite: 'Moyenne',  poids: 0.2, sous_section: null,                label: "La vérification journalière des échafaudages est-elle bien instruite ?" },
+          { key: 'haut_5',  numero: '20',   criticite: 'Critique', poids: 0.5, sous_section: null,                label: "Le permis d'utilisation des PEMP est-il validé par l'ECMA, délivré et existe ?" },
+          { key: 'haut_6',  numero: '21',   criticite: 'Elevée',   poids: 0.4, sous_section: null,                label: "Le permis d'utilisation des PEMP est-il bien instruit ?" },
+          { key: 'haut_7',  numero: '22',   criticite: 'Critique', poids: 0.5, sous_section: null,                label: "Tous les moyens d'accès utilisés sont-ils conformes (échafaudage, PEMP, …) ?" },
+          { key: 'haut_8',  numero: '23-1', criticite: 'Critique', poids: 0.5, sous_section: 'Système anti-chute', label: "Bien habillé et accroché à un point sûr" },
+          { key: 'haut_9',  numero: '23-2', criticite: 'Critique', poids: 0.5, sous_section: 'Système anti-chute', label: "Respect du Tirant d'Air" },
+          { key: 'haut_10', numero: '24',   criticite: 'Moyenne',  poids: 0.2, sous_section: null,                label: "Permis de travail en hauteur avec EPI bien instruit" },
+          { key: 'haut_11', numero: '25',   criticite: 'Critique', poids: 0.5, sous_section: null,                label: "Permis de travail en hauteur avec EPI délivré et validé par le CEEE" },
+          { key: 'haut_12', numero: '26',   criticite: 'Critique', poids: 0.5, sous_section: null,                label: "Les permis de travail en hauteur ne sont délivrés qu'après mise en place des moyens d'accès exigés" },
+        ],
       },
       espace_confine: {
         label: 'Espace confiné',
-        items: {
-          esp_1: "Permis d'entrée disponible",
-          esp_2: 'Atmosphère testée (O2, gaz toxiques)',
-          esp_3: 'Équipement de détection disponible',
-          esp_4: 'Système de récupération en place',
-          esp_5: 'Sentinelle présente et formée'
-        }
+        items: [
+          { key: 'esp_1',  numero: '27', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Le permis de pénétration dans l'espace confiné est-il validé par HMEP, HMEE et RHVP, délivré et existe ?" },
+          { key: 'esp_2',  numero: '28', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Le permis de pénétration dans l'espace confiné est-il bien instruit ?" },
+          { key: 'esp_3',  numero: '29', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Les exigences du permis de pénétration dans un espace confiné sont-elles respectées sur terrain ?" },
+          { key: 'esp_4',  numero: '30', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Vérifications journalières de la validité du Permis (si durée dépasse 24H)" },
+          { key: 'esp_5',  numero: '31', criticite: 'Critique', poids: 0.5, sous_section: null, label: "L'ensemble des entrants sont-ils mentionnés dans la liste des entrants formés et autorisés ?" },
+          { key: 'esp_6',  numero: '32', criticite: 'Elevée',   poids: 0.4, sous_section: null, label: "L'ensemble des entrants sont-ils formés ?" },
+          { key: 'esp_7',  numero: '33', criticite: 'Elevée',   poids: 0.4, sous_section: null, label: "L'ensemble des surveillants sont-ils mentionnés dans la liste des surveillants ?" },
+          { key: 'esp_8',  numero: '34', criticite: 'Critique', poids: 0.5, sous_section: null, label: "L'ensemble des surveillants sont-ils habilités ?" },
+          { key: 'esp_9',  numero: '35', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Le surveillant assure-t-il son poste ?" },
+          { key: 'esp_10', numero: '36', criticite: 'Critique', poids: 0.5, sous_section: null, label: "L'état de suivi journalier de la pénétration à l'espace confiné est-il bien instruit par le surveillant ?" },
+        ],
       },
       circulation: {
         label: 'Circulation',
-        items: {
-          circ_1: 'Voies de circulation dégagées',
-          circ_2: 'Signalisation de chantier en place',
-          circ_3: 'Vitesse limitée respectée',
-          circ_4: 'EPI port respecté',
-          circ_5: 'Séparation piétons/véhicules assurée'
-        }
+        items: [
+          { key: 'circ_1', numero: '37', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Respect des panneaux de signalisation" },
+          { key: 'circ_2', numero: '38', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Port de la ceinture de sécurité" },
+          { key: 'circ_3', numero: '39', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Non utilisation du téléphone au volant" },
+          { key: 'circ_4', numero: '40', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Respect de la position de départ" },
+          { key: 'circ_5', numero: '41', criticite: 'Elevée',   poids: 0.4, sous_section: null, label: "Les engins / véhicules conformes aux exigences du standard" },
+          { key: 'circ_6', numero: '42', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Les conducteurs sont habilités selon le standard" },
+        ],
       },
       mode_operatoire: {
-        label: 'Mode opératoire',
-        items: {
-          mode_1: 'Mode opératoire disponible et connu',
-          mode_2: 'Instructions de sécurité affichées',
-          mode_3: 'Habilitations et formations vérifiées',
-          mode_4: 'Outillage approprié à la tâche',
-          mode_5: 'Plan de gestion des déchets respecté'
-        }
+        label: 'Mode opératoire (ADRPT)',
+        items: [
+          { key: 'mode_1', numero: '43', criticite: 'Elevée',   poids: 0.4, sous_section: null, label: "Le mode opératoire est-il à la portée du personnel ?" },
+          { key: 'mode_2', numero: '44', criticite: 'Elevée',   poids: 0.4, sous_section: null, label: "Les intervenants sont-ils informés et formés sur le mode opératoire ?" },
+          { key: 'mode_3', numero: '45', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Le mode opératoire est-il adapté à l'activité ?" },
+          { key: 'mode_4', numero: '46', criticite: 'Critique', poids: 0.5, sous_section: null, label: "Les intervenants respectent le mode opératoire associé à la tâche" },
+        ],
       },
       epi: {
         label: 'EPI',
-        items: {
-          epi_1: 'Casque de sécurité porté',
-          epi_2: 'Chaussures de sécurité portées',
-          epi_3: 'Gilet haute visibilité porté',
-          epi_4: 'Lunettes/masque de protection portés',
-          epi_5: 'Gants adaptés portés',
-          epi_6: 'Protection auditive portée si nécessaire'
-        }
-      }
-    }
+        items: [
+          { key: 'epi_1', numero: '47', criticite: null, poids: null, sous_section: null, label: "Protection de tête (casque)" },
+          { key: 'epi_2', numero: '48', criticite: null, poids: null, sous_section: null, label: "Protection des yeux et visage" },
+          { key: 'epi_3', numero: '49', criticite: null, poids: null, sous_section: null, label: "Protection du tronc (gilet HV, vêtement de travail)" },
+          { key: 'epi_4', numero: '50', criticite: null, poids: null, sous_section: null, label: "Protection auditive" },
+          { key: 'epi_5', numero: '51', criticite: null, poids: null, sous_section: null, label: "Protection du système respiratoire (risque lié à l'activité)" },
+          { key: 'epi_6', numero: '52', criticite: null, poids: null, sous_section: null, label: "Dotation par des masques panoramiques conformes (exigence site)" },
+          { key: 'epi_7', numero: '53', criticite: null, poids: null, sous_section: null, label: "Système anti-chute (harnais, longe, mousquetons, absorbeur, …)" },
+          { key: 'epi_8', numero: '54', criticite: null, poids: null, sous_section: null, label: "Protection des mains (gants adaptés)" },
+          { key: 'epi_9', numero: '55', criticite: null, poids: null, sous_section: null, label: "Protection des pieds (chaussures de sécurité)" },
+        ],
+      },
+    },
   },
+
   equipements: {
-    label: 'Équipements',
+    label: 'Équipements, engins et outillage',
     sections: {
       acces: {
         label: "Moyens d'accès",
-        items: {
-          acc_1: 'Échelles en bon état et homologuées',
-          acc_2: 'Échafaudages inspectés et balisés',
-          acc_3: 'Plateformes élévatrices vérifiées',
-          acc_4: 'Passerelles et rambardes conformes',
-          acc_5: 'Filets de sécurité installés si requis'
-        }
+        items: [
+          { key: 'acc_pemp_1', numero: '1',  sous_section: 'PEMP',                      label: "Manque de la checklist d'accès ou expirée" },
+          { key: 'acc_pemp_2', numero: '2',  sous_section: 'PEMP',                      label: "Opérateur non habilité (manque du permis, formation, aptitude physique ou habilitation)" },
+          { key: 'acc_pemp_3', numero: '3',  sous_section: 'PEMP',                      label: "Manque du badge d'accès ou expiré" },
+          { key: 'acc_pemp_4', numero: '4',  sous_section: 'PEMP',                      label: "Ne respecte pas la zone autorisée" },
+          { key: 'acc_pemp_5', numero: '5',  sous_section: 'PEMP',                      label: "Etat général de la PEMP dégradé" },
+          { key: 'acc_ech_6',  numero: '6',  sous_section: 'Échafaudage',               label: "Non-conforme (aucun SCAFFTAG, incomplet ou dégradé, …)" },
+          { key: 'acc_ech_7',  numero: '7',  sous_section: 'Échafaudage',               label: "Non-conforme avec SCAFFTAG vert" },
+          { key: 'acc_ech_8',  numero: '8',  sous_section: 'Échafaudage',               label: "Échafaudage non conforme avec SCAFFTAG rouge" },
+          { key: 'acc_aut_9',  numero: '9',  sous_section: 'Échelle, PIR & escabeau',   label: "Manque de la fiche de vérification ou expirée" },
+          { key: 'acc_aut_10', numero: '10', sous_section: 'Échelle, PIR & escabeau',   label: "Etat général de l'échelle ou escabeau dégradé" },
+        ],
       },
       soudage: {
-        label: 'Soudage',
-        items: {
-          soud_1: 'Poste de soudage en bon état',
-          soud_2: 'Extincteur à proximité',
-          soud_3: 'Protection zones adjacentes assurée',
-          soud_4: 'Masque de soudure et EPI adaptés',
-          soud_5: 'Permis de feu disponible'
-        }
+        label: 'Équipements de soudage et oxycoupage',
+        items: [
+          { key: 'soud_oxy_1',  numero: '1', sous_section: 'Poste oxyacétylénique',       label: "Dépourvu de chariot de transport ou en état dégradé" },
+          { key: 'soud_oxy_2',  numero: '2', sous_section: 'Poste oxyacétylénique',       label: "Flexibles non conformes (dégradés, dépourvus du clapet antiretour et colliers de serrage)" },
+          { key: 'soud_oxy_3',  numero: '3', sous_section: 'Poste oxyacétylénique',       label: "Dépourvu du manomètre ou manomètre dégradé" },
+          { key: 'soud_elec_4', numero: '4', sous_section: 'Poste de soudure électrique', label: "Etat général dégradé" },
+          { key: 'soud_elec_5', numero: '5', sous_section: 'Poste de soudure électrique', label: "Cosses et pinces dégradées" },
+          { key: 'soud_elec_6', numero: '6', sous_section: 'Poste de soudure électrique', label: "Câbles électriques dégradés" },
+          { key: 'soud_meu_7',  numero: '7', sous_section: 'Meules',                      label: "Etat général dégradé" },
+          { key: 'soud_meu_8',  numero: '8', sous_section: 'Meules',                      label: "Manque du carénage de protection ou dégradé" },
+          { key: 'soud_meu_9',  numero: '9', sous_section: 'Meules',                      label: "Câbles électriques dégradés" },
+        ],
       },
       extinction: {
-        label: 'Extinction',
-        items: {
-          ext_1: 'Extincteurs accessibles et non obstrués',
-          ext_2: 'Extincteurs dans délais de vérification',
-          ext_3: 'Robinets incendie armés fonctionnels',
-          ext_4: "Plans d'évacuation affichés",
-          ext_5: "Voies d'évacuation dégagées"
-        }
+        label: "Moyen d'extinction de feu et limitation d'incendie",
+        items: [
+          { key: 'ext_1', numero: '1', sous_section: null, label: "Manque du moyen d'extinction de feu ou non conforme" },
+          { key: 'ext_2', numero: '2', sous_section: null, label: "Manque du moyen de limitation de projection d'étincelle (bâche ignifugée, écran, …)" },
+        ],
       },
       levage: {
-        label: 'Levage',
-        items: {
-          lev_1: 'Engins de levage certifiés et vérifiés',
-          lev_2: 'Élingues et accessoires conformes',
-          lev_3: 'Plan de levage disponible si nécessaire',
-          lev_4: 'Zone de levage balisée',
-          lev_5: 'Opérateur certifié et habilité'
-        }
+        label: 'Équipements de levage et manutention',
+        items: [
+          { key: 'lev_grue_1',  numero: '1',  sous_section: 'Grue',                              label: "Manque de la checklist d'accès ou expirée" },
+          { key: 'lev_grue_2',  numero: '2',  sous_section: 'Grue',                              label: "Grutier non habilité (manque du permis, formation, aptitude physique ou habilitation)" },
+          { key: 'lev_grue_3',  numero: '3',  sous_section: 'Grue',                              label: "Manque du badge d'accès ou expiré" },
+          { key: 'lev_grue_4',  numero: '4',  sous_section: 'Grue',                              label: "Ne respecte pas la zone autorisée" },
+          { key: 'lev_grue_5',  numero: '5',  sous_section: 'Grue',                              label: "Etat général de la grue dégradé" },
+          { key: 'lev_char_6',  numero: '6',  sous_section: 'Chariot élévateur',                 label: "Manque de la checklist d'accès ou expirée" },
+          { key: 'lev_char_7',  numero: '7',  sous_section: 'Chariot élévateur',                 label: "Cariste non habilité (manque du permis, formation, aptitude physique ou habilitation)" },
+          { key: 'lev_char_8',  numero: '8',  sous_section: 'Chariot élévateur',                 label: "Manque du badge d'accès ou expiré" },
+          { key: 'lev_char_9',  numero: '9',  sous_section: 'Chariot élévateur',                 label: "Ne respecte pas la zone autorisée" },
+          { key: 'lev_char_10', numero: '10', sous_section: 'Chariot élévateur',                 label: "Etat général du chariot élévateur dégradé" },
+          { key: 'lev_aut_11',  numero: '11', sous_section: 'Autres moyens (palan, tir-fort, …)', label: "Manque du certificat de contrôle réglementaire ou expiré" },
+          { key: 'lev_aut_12',  numero: '12', sous_section: 'Autres moyens (palan, tir-fort, …)', label: "Etat général du moyen de levage dégradé" },
+        ],
       },
       pression: {
-        label: 'Pression',
-        items: {
-          pres_1: 'Équipements sous pression vérifiés',
-          pres_2: 'Soupapes de sécurité fonctionnelles',
-          pres_3: 'Manomètres étalonnés',
-          pres_4: 'Tuyauteries et raccords en bon état',
-          pres_5: 'Registre de contrôle à jour'
-        }
+        label: 'Équipements sous pression',
+        items: [
+          { key: 'pres_comp_1', numero: '1', sous_section: 'Compresseur', label: "Manque de la checklist d'accès ou expirée" },
+          { key: 'pres_comp_2', numero: '2', sous_section: 'Compresseur', label: "Etat général du compresseur dégradé" },
+          { key: 'pres_sabl_3', numero: '3', sous_section: 'Sableuse',    label: "Manque de la checklist d'accès ou expirée" },
+          { key: 'pres_sabl_4', numero: '4', sous_section: 'Sableuse',    label: "Manque du système de commande à distance ou inopérationnel" },
+          { key: 'pres_sabl_5', numero: '5', sous_section: 'Sableuse',    label: "Etat général de la sableuse dégradé" },
+        ],
       },
       engins: {
-        label: 'Engins',
-        items: {
-          eng_1: 'Engins vérifiés avant utilisation',
-          eng_2: 'Carnet de bord à jour',
-          eng_3: 'Conducteur habilité et certifié',
-          eng_4: 'Dispositifs de sécurité fonctionnels',
-          eng_5: 'Zones de manœuvre balisées'
-        }
+        label: 'Engins de chantier',
+        items: [
+          { key: 'eng_1', numero: '1', sous_section: null, label: "Manque de la checklist d'accès ou expirée" },
+          { key: 'eng_2', numero: '2', sous_section: null, label: "Conducteur non habilité (manque du permis, formation, aptitude physique ou habilitation)" },
+          { key: 'eng_3', numero: '3', sous_section: null, label: "Manque du badge d'accès ou expiré" },
+          { key: 'eng_4', numero: '4', sous_section: null, label: "Ne respecte pas la zone autorisée" },
+          { key: 'eng_5', numero: '5', sous_section: null, label: "Etat général de l'engin de chantier dégradé" },
+        ],
       },
       outillage: {
-        label: 'Outillage',
-        items: {
-          out_1: 'Outillage adapté à la tâche',
-          out_2: 'Outillage en bon état',
-          out_3: 'Outillage électrique vérifié conforme',
-          out_4: 'Rangement et stockage corrects',
-          out_5: "Registre d'entretien à jour"
-        }
-      }
-    }
-  }
+        label: 'Outillage à main',
+        items: [
+          { key: 'out_1', numero: '1', sous_section: null, label: "Outillage de frappe (marteau, masse, javelon, …) non conforme" },
+          { key: 'out_2', numero: '2', sous_section: null, label: "Clés non conformes ou dégradées" },
+          { key: 'out_3', numero: '3', sous_section: null, label: "Outillage à main électrique en état dégradé ou non conforme" },
+          { key: 'out_4', numero: '4', sous_section: null, label: "Autres outillages dégradés ou non conformes" },
+        ],
+      },
+    },
+  },
 };
 
-// Sections allowed per role per checklist type
 export const ROLE_SECTION_ACCESS = {
-  admin: {
-    standards_hse: null, // null = all sections
-    equipements: null
-  },
-  responsable_hse: {
-    standards_hse: null,
-    equipements: null
-  },
-  animateur_hse: {
-    standards_hse: ['mode_operatoire', 'epi'],
-    equipements: null
-  }
+  admin:           { standards_hse: null, equipements: null },
+  responsable_hse: { standards_hse: null, equipements: null },
+  animateur_hse:   { standards_hse: ['mode_operatoire', 'epi'], equipements: null },
 };
 
-export default checklistDefinitions;
+export default DEFINITIONS;
