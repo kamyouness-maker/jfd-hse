@@ -1,5 +1,5 @@
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import { isDemoMode, mockRequest } from '../demo/mockApi';
 
 const apiClient = axios.create({
   baseURL: '/api',
@@ -25,61 +25,73 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('safecheck_token');
       localStorage.removeItem('safecheck_user');
-      window.location.href = '/';
+      window.location.hash = '/';
     }
     return Promise.reject(error);
   }
 );
 
+// Wrapper that uses mock in demo mode
+async function request(method, url, data, config) {
+  if (isDemoMode) {
+    return mockRequest(method, url, data);
+  }
+  return apiClient.request({ method, url, data, ...config });
+}
+
 export default apiClient;
 
-// Helper to check if we're online
 export function isOnline() {
   return navigator.onLine;
 }
 
-// API methods with offline support
 export const toursApi = {
-  getAll: () => apiClient.get('/tours'),
-  getOne: (id) => apiClient.get(`/tours/${id}`),
-  create: (data) => apiClient.post('/tours', data),
-  update: (id, data) => apiClient.put(`/tours/${id}`, data),
-  delete: (id) => apiClient.delete(`/tours/${id}`),
+  getAll: () => request('GET', '/tours'),
+  getOne: (id) => request('GET', `/tours/${id}`),
+  create: (data) => request('POST', '/tours', data),
+  update: (id, data) => request('PUT', `/tours/${id}`, data),
+  delete: (id) => request('DELETE', `/tours/${id}`),
 };
 
 export const checklistApi = {
-  getForTour: (tourId) => apiClient.get(`/tours/${tourId}/checklist`),
-  init: (tourId, type) => apiClient.post(`/tours/${tourId}/checklist/init`, { checklist_type: type }),
-  update: (id, data) => apiClient.put(`/checklist/${id}`, data),
-  delete: (id) => apiClient.delete(`/checklist/${id}`),
+  getForTour: (tourId) => request('GET', `/tours/${tourId}/checklist`),
+  init: (tourId, type) => request('POST', `/tours/${tourId}/checklist/init`, { checklist_type: type }),
+  update: (id, data) => request('PUT', `/checklist/${id}`, data),
+  delete: (id) => request('DELETE', `/checklist/${id}`),
 };
 
 export const photosApi = {
   upload: (checklistItemId, formData) =>
-    apiClient.post(`/photos/${checklistItemId}`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
-  delete: (id) => apiClient.delete(`/photos/${id}`),
-  getUrl: (id) => `/api/photos/${id}`,
+    isDemoMode
+      ? mockRequest('POST', `/photos/${checklistItemId}`, formData)
+      : apiClient.post(`/photos/${checklistItemId}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        }),
+  delete: (id) => request('DELETE', `/photos/${id}`),
+  getUrl: (id) => (isDemoMode ? null : `/api/photos/${id}`),
 };
 
 export const syncApi = {
-  push: (data) => apiClient.post('/sync', data),
-  timestamp: () => apiClient.get('/sync/timestamp'),
+  push: (data) => request('POST', '/sync', data),
+  timestamp: () => request('GET', '/sync/timestamp'),
 };
 
 export const dashboardApi = {
-  get: () => apiClient.get('/dashboard'),
+  get: () => request('GET', '/dashboard'),
 };
 
 export const reportsApi = {
   tourPdf: (tourId) =>
-    apiClient.get(`/reports/tour/${tourId}`, { responseType: 'blob' }),
+    isDemoMode
+      ? Promise.reject(new Error('PDF non disponible en mode démo. Installez le serveur pour générer les rapports.'))
+      : apiClient.get(`/reports/tour/${tourId}`, { responseType: 'blob' }),
 };
 
 export const usersApi = {
-  getAll: () => apiClient.get('/users'),
-  create: (data) => apiClient.post('/users', data),
-  update: (id, data) => apiClient.put(`/users/${id}`, data),
-  delete: (id) => apiClient.delete(`/users/${id}`),
+  getAll: () => request('GET', '/users'),
+  create: (data) => request('POST', '/users', data),
+  update: (id, data) => request('PUT', `/users/${id}`, data),
+  delete: (id) => request('DELETE', `/users/${id}`),
 };
+
+export { isDemoMode };
